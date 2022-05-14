@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cool_alert/cool_alert.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -15,6 +17,7 @@ class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() =>  _LoginPageState();
 }
+String token1 = "";
 late SharedPreferences prefs;
 String erorr  = "";
 late String token;
@@ -32,6 +35,41 @@ class _LoginPageState extends State<LoginPage> {
       DeviceOrientation.portraitDown,
     ]);
         () async {
+          await Firebase.initializeApp();
+          await FirebaseMessaging.instance.requestPermission(
+            alert: true,
+            announcement: false,
+            badge: true,
+            carPlay: false,
+            criticalAlert: false,
+            provisional: false,
+            sound: true,
+          );
+
+
+          if (Platform.isAndroid) {
+            FirebaseMessaging.instance.getToken().then((_token) {
+              print('[getToken] token: $_token');
+              token1 = _token!;
+            }).catchError((onError) {
+              print('[getToken] onError: $onError');
+            });
+          }else if(Platform.isIOS){
+            token1 = (await FirebaseMessaging.instance.getToken())!;
+          }
+
+          // _in
+
+
+          FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
+            token1 = newToken;
+          });
+
+          FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+            // Save newToken
+            print('Token: $newToken');
+
+          });
       prefs = await SharedPreferences.getInstance();
       token = prefs.getString('token') ?? "";
       print(token);
@@ -216,7 +254,7 @@ class _LoginPageState extends State<LoginPage> {
 
       }
     }else if (data.toString().contains("Logined")) {
-      Navigator.pop(context);
+
       setState(() {
 
         erorr = "الحساب قيد تسجيل الدخول";

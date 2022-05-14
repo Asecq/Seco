@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>875847174332-l9ll9n81f39213207bfpu3707bc1df8m.apps.googleusercontent.com</string>
+	<string>935365127126-mnlbttkh78iqe3i8lv036envc1r0mb4n.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.875847174332-l9ll9n81f39213207bfpu3707bc1df8m</string>
+	<string>com.googleusercontent.apps.935365127126-mnlbttkh78iqe3i8lv036envc1r0mb4n</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBzB7BwRXRzoYL7pGvqCTUki_3B18U4mHU</string>
+	<string>AIzaSyB_G2zN1rIe7x4XvQCIvnJ0O5SsxiXqyXI</string>
 	<key>GCM_SENDER_ID</key>
-	<string>875847174332</string>
+	<string>935365127126</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.seco.app</string>
 	<key>PROJECT_ID</key>
-	<string>seco-5b1bf</string>
+	<string>fax-shipping</string>
 	<key>STORAGE_BUCKET</key>
-	<string>seco-5b1bf.appspot.com</string>
+	<string>fax-shipping.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:875847174332:ios:317421a21022ec2442a8b9</string>
+	<string>1:935365127126:ios:0995c90c13db4ba9019277</string>
 </dict>
 </plist>

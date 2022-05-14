@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:cool_alert/cool_alert.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:seco/pages/history_done.dart';
 import 'package:seco/pages/login.dart';
 import 'package:seco/subPages/back.dart';
@@ -13,6 +16,9 @@ import '../api/connect.dart';
 import '../subPages/done.dart';
 import 'history_back.dart';
 
+final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+late Barcode result;
+late QRViewController controller;
   List items = [];
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -183,11 +189,11 @@ class _HomeState extends State<Home>  with SingleTickerProviderStateMixin{
         controller: _controller,
         disableDefaultTabController: true,
         style: TabStyle.react,
-        items: const [
-          TabItem(icon: Icons.insert_chart , title: "الاحصائيات"),
-          TabItem(icon: Icons.access_time , title: "قيد التسليم"  " (21) "),
-          TabItem(icon: Icons.check_circle , title: "واصل"  " (19) "),
-          TabItem(icon: Icons.not_interested_sharp , title: "راجع" " (2) "),
+        items:  [
+          const TabItem(icon: Icons.insert_chart , title: "الاحصائيات"),
+          TabItem(icon: Icons.access_time , title: (items.isNotEmpty)? "قيد التسليم (${items[0]['loading']})" : "قيد التسليم (-)"  ),
+          TabItem(icon: Icons.check_circle , title: (items.isNotEmpty)? "واصل (${items[0]['done']})" : "واصل (-)"  ),
+          TabItem(icon: Icons.not_interested_sharp , title: (items.isNotEmpty)? "راجع (${items[0]['back']})" : "مرتجع (-)"  ),
         ],
         initialActiveIndex: _controller.index,
         onTap: (int i) {
@@ -220,6 +226,13 @@ class _HomeState extends State<Home>  with SingleTickerProviderStateMixin{
 
   }
 
+
+  void _onQRViewCreated(QRViewController _controller) {
+    _controller = controller;
+    controller.scannedDataStream.listen((scanData) {
+      print(scanData);
+    });
+  }
 }
 class statces extends StatefulWidget {
   const statces({Key? key}) : super(key: key);
@@ -492,7 +505,78 @@ class _statcesState extends State<statces> {
 
         )
     );
+
   }
 
 
+
 }
+class QRViewExample extends StatefulWidget {
+  const QRViewExample({Key? key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _QRViewExampleState();
+}
+
+class _QRViewExampleState extends State<QRViewExample> {
+  final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  Barcode? result;
+  QRViewController? controller;
+
+  // In order to get hot reload to work we need to pause the camera if the platform
+  // is android, or resume the camera if the platform is iOS.
+  @override
+  void reassemble() {
+    super.reassemble();
+    if (Platform.isAndroid) {
+      controller!.pauseCamera();
+    } else if (Platform.isIOS) {
+      controller!.resumeCamera();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: <Widget>[
+          Expanded(
+            flex: 5,
+            child: QRView(
+              key: qrKey,
+              onQRViewCreated: _onQRViewCreated,
+            ),
+          ),
+          Expanded(
+            flex: 1,
+            child: Center(
+              child: (result != null)
+                  ? Text(
+                  'Barcode Type: ${describeEnum(result!.format)}   Data: ${result!.code}')
+                  : Text('Scan a code'),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  void _onQRViewCreated(QRViewController controller) {
+    this.controller = controller;
+    controller.scannedDataStream.listen((scanData) {
+
+
+      setState(() {
+        result = scanData;
+        print(result!.code);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    controller?.dispose();
+    super.dispose();
+  }
+}
+
